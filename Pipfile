@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+"autopep8" = "*"
+pylint = "*"
+
+[packages]
+pygame = "*"
+pillow = "*"
+pytesseract = "*"
+requests = "*"
+
+[requires]
+python_version = "3.6"
