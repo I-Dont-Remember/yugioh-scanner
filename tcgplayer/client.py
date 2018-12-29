@@ -101,7 +101,7 @@ class TCGplayerClient(object):
 
     def _post(self, path, body=None):
         r = requests.post(url+version_path+path, json=body, headers=self.headers)
-        print(r.json())
+        # print(r.json())
         if r.status_code != requests.codes.ok or not r.json()["success"]:
             raise TCGplayerException(r.json())
         else:
@@ -128,11 +128,14 @@ class TCGplayerClient(object):
         body = {
             "filters": [
                 #{"name": "Number", "values": ["SDY-001"]}
-                {"name": "ProductName", "values": [query]}
+                {"name": "Number", "values": [query]}
             ]
         }
         return self._post("/catalog/categories/2/search", body=body)
     
+    def get_category_groups(self):
+        return self._get("/catalog/categories/2/groups")
+
     def get_product_details(self, product_ids):
         comma_list = ",".join(map(str, product_ids))
         return self._get("/catalog/products/%s"%comma_list)

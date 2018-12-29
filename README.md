@@ -2,7 +2,7 @@
 
 ## Usage
 
-`manual.py`: Basic version for while we can't get Tesseract working like we want. Loop for user input of the card number & display info about it & save it to a CSV.
+`manual.py`: Basic version for while we can't get Tesseract working like we want. Loop for user input of the card number & display info about it & save it to a CSV. Can be used either by inputting card numbers one at a time or by passing a file of numbers.
 
 To change the device passed to our Docker container, change the videoDevice env variable `videoDevice=/dev/video0 make run-shell`.
 
