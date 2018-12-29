@@ -12,6 +12,7 @@ pygame = "*"
 pillow = "*"
 pytesseract = "*"
 requests = "*"
+inquirer = "*"
 
 [requires]
 python_version = "3.6"

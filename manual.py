@@ -3,6 +3,7 @@ import csv
 import os
 import tcgplayer
 import creds
+import inquirer
 
 
 def verify_number(num):
@@ -12,7 +13,7 @@ def verify_number(num):
         return False
     return True
 
-# TODO: what if we find wrong card? what should we do?
+
 def get_pricing_data(cn, tp):
     names = {}
     results = tp.search(cn)
@@ -20,9 +21,8 @@ def get_pricing_data(cn, tp):
     # map the id to the name
     for d in details:
         names[d["productId"]] = d["name"]
-    print("    Found -> %s" % str(names))
     prices = tp.get_product_pricing(results)
-    # format the prices
+    # cleanout empty prices
     prices = [x for x in prices if x["marketPrice"] is not None]
     # add name & card number to listing
     for p in prices:
@@ -31,35 +31,58 @@ def get_pricing_data(cn, tp):
         del p["directLowPrice"]
     return prices
 
+# returns bool if we wrote to the file
+def ask_user_and_write_to_file(writer, pricing_options):
+    wrote = False
+    # let user select which subType they have
+    question = inquirer.List("cardChoice",
+                    message="Select which subType matches your card:",
+                    choices=[(x["name"] + ":" + x["subTypeName"]) for x in pricing_options] + ["None"],
+                    carousel=True)
+    answer = inquirer.prompt([question])["cardChoice"]
 
+    if answer == "None":
+        print("[*] skipping writing to file..")
+    else:
+        name, subType = answer.split(":")
+        for item in pricing_options:
+            if item["subTypeName"] == subType and item["name"] == name:
+                wrote = True
+                writer.writerow(item)
+    return wrote
+
+
+# TODO: these loops share almost all the same code, could be combined but at the moment not worth the effort
 def input_loop(writer, tp):
     print("[*] please input one card at a time, [q] to Exit:")
     count = 0
     while True:
-        card_number = input("> ")
+        card_number = input("$ ")
         if verify_number(card_number):
-            data = get_pricing_data(card_number, tp)
-            writer.writerows(data)
-            count += 1
+            pricing_options = get_pricing_data(card_number, tp)
+            if ask_user_and_write_to_file(writer, pricing_options):
+                count += 1
         else:
             if card_number == "q" or card_number == "Q":
-                print("Quit selected after %d cards" % count)
+                print("Quit selected after %d card(s)" % count)
                 break
-            # TODO: allow user to insert row marking prev row as incorrect?
             print("[!] Yu-Gi-Oh card numbers have two parts divided by a dash")
 
 
-def file_loop(file_path, tp):
-    data = []
+#TODO: see comment above input_loop
+def file_loop(file_path, writer, tp):
     # TODO: verify file is real
+    count = 0
     with open(file_path) as f:
         for line in f:
             if verify_number(line):
-                print(line)
-                data += get_pricing_data(line, tp)
+                print("Evaluating %s..." % line)
+                pricing_options = get_pricing_data(line, tp)
+                if ask_user_and_write_to_file(writer, pricing_options):
+                    count += 1
             else:
                 print("Not a valid card number -%s" % line)
-    return data
+        print("Finished reading file after %d card(s)" % count)
 
 
 def main():
@@ -86,13 +109,12 @@ def main():
             ]
         writer = csv.DictWriter(fp, fieldnames=fn)
         writer.writeheader()
-        # assume user loop if path isn't provided
+
+        # use single row at a time versus saving for the end 
+        # so if something happens user doesn't lose all their progress
         if args.path:
-            data = file_loop(args.path, tp)
-            writer.writerows(data)
+            file_loop(args.path, writer, tp)
         else:
-            # use single row at a time versus saving for the end 
-            # so if something happens user doesn't lose all their progress
             input_loop(writer, tp)
 
         print("Wrote output to %s" % output_file)
