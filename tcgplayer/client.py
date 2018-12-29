@@ -127,7 +127,6 @@ class TCGplayerClient(object):
         # returns a list of product ids that matched
         body = {
             "filters": [
-                #{"name": "Number", "values": ["SDY-001"]}
                 {"name": "Number", "values": [query]}
             ]
         }

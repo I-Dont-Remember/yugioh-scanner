@@ -66,7 +66,7 @@ class Camera(object):
                 take_pygame_image(self.camera, file_path)
             else:
                 take_fsweb_image(self.device, self.crop_size,
-                                 self.crop_start, file_path)
+                                    self.crop_start, file_path)
             process_image(self, file_path)
         except Exception as e:
             raise ValueError("Unable to take/or save photo %s" % e)
