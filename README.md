@@ -2,6 +2,8 @@
 
 ## Usage
 
+`manual.py`: Basic version for while we can't get Tesseract working like we want. Loop for user input of the card number & display info about it & save it to a CSV.
+
 To change the device passed to our Docker container, change the videoDevice env variable `videoDevice=/dev/video0 make run-shell`.
 
 ## Tesseract Usage
@@ -10,8 +12,7 @@ Use the included Makefile to handle building the image, running a shell, or othe
 
 ## Camera Setup
 
-In current state, can only handle the card name. The card number is too small and hard to pickup for
-either webcam we are currently using, so we will have to come up with an enhancement to make this work.
+Card number is the most important part, and though small more consistent than the card name. Card number is always black text on a variety of background colors whereas the name can be white as well.
 
 Build your apparatus for scanning with the card area delineated and mounted webcam. To preprocess the image,
 we use our image capture tool to crop just the name of card. Finding the correct points to crop can be frustrating,

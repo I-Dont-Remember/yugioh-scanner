@@ -39,6 +39,8 @@ def main():
     # setup camera
     try:
         pc.init()
+        print("Cameras -> ")
+        print(pc.list_cameras())
         webcam = pc.Camera(pc.list_cameras()[0])
         webcam.start()
     except Exception as e:

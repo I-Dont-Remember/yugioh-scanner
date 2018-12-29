@@ -1,6 +1,6 @@
 # can be overridden by setting command line env
 imageName := "tess4"
-videoDevice := "/dev/video0"
+videoDevice := "/dev/video1"
 
 build:
 	docker build -t ${imageName} .

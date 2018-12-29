@@ -11,7 +11,7 @@ def main():
     # can take pic, use fswebcam to crop
     # also has some options we can check with inverting/greyscale, but that might not be as helpful because
     # we deal with white and black text equally
-    command1 = "fswebcam -d %s -r 640x480 --crop %s --no-banner --save photos.png" %(device,crop_values)
+    command1 = "fswebcam -d %s -r 640x480 --crop %s --no-banner --save photo.jpg" %(device,crop_values)
     output1 = subprocess.check_output(command1, encoding="UTF-8", shell=True)
     print(output1)
 

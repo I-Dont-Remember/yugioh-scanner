@@ -1,2 +1,10 @@
 .vscode/
+auth.py
+creds.py
+__pycache__/
+*.csv
+*.json
+*.txt
+*.jpg
+*.png
 
