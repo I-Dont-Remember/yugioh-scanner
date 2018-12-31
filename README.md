@@ -8,6 +8,9 @@ Repo uses Pipenv to manage dependencies, see their instructions for setting up a
 
 Eventually this process should be automatic, using Tesseract to pull the text from card pictures rather than human input.
 
+![Usage of the manual script](assets/yugioh-manual-scanner.png?raw=true "Example")
+
+
 `ocr`: Variety of scripts in the process of trying to get Object Character Recognition working.  We've gotten close many times, but haven't reached the consistency necessary to use it over a human.  Currently using an old webcam mounted over the card, but it's possible the next step is to find a way to get higher quality photos rather than trying to process low quality ones to work.
 
 

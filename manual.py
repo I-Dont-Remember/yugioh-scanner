@@ -56,7 +56,7 @@ def ask_user_and_write_to_file(writer, pricing_options):
         for item in pricing_options:
             if item["subTypeName"] == subType and item["name"] == name:
                 wrote = True
-                print("      Writing %s" % str(item))
+                print("      Writing %s, %s" % (name, subType))
                 writer.writerow(item)
     return wrote
 
@@ -66,7 +66,7 @@ def input_loop(writer, tp):
     print("[*] please input one card at a time, [q] to Exit:")
     count = 0
     while True:
-        card_number = input("[%d]$ "%count)
+        card_number = input("[%d cards]$ "%count)
         if verify_number(card_number):
             pricing_options = get_pricing_data(card_number, tp)
             if ask_user_and_write_to_file(writer, pricing_options):
