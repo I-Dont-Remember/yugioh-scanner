@@ -140,6 +140,8 @@ class TCGplayerClient(object):
         return self._get("/catalog/products/%s"%comma_list)
 
     def get_product_pricing(self, product_ids):
+        if not product_ids:
+            return None
         comma_list = ",".join(map(str,product_ids))
         return self._get("/pricing/product/%s"%comma_list)
 

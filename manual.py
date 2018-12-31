@@ -17,6 +17,8 @@ def verify_number(num):
 def get_pricing_data(cn, tp):
     names = {}
     results = tp.search(cn)
+    if not results:
+        return None
     details = tp.get_product_details(results)
     # map the id to the name
     for d in details:
@@ -34,20 +36,27 @@ def get_pricing_data(cn, tp):
 # returns bool if we wrote to the file
 def ask_user_and_write_to_file(writer, pricing_options):
     wrote = False
+
+    if not pricing_options:
+        print("[*] found no items for that number...")
+        return wrote
+
     # let user select which subType they have
     question = inquirer.List("cardChoice",
                     message="Select which subType matches your card:",
-                    choices=[(x["name"] + ":" + x["subTypeName"]) for x in pricing_options] + ["None"],
+                    choices=[("%s:%s<($%s)" %(x["name"],x["subTypeName"],x["marketPrice"])) for x in pricing_options] + ["None"],
                     carousel=True)
     answer = inquirer.prompt([question])["cardChoice"]
 
     if answer == "None":
         print("[*] skipping writing to file..")
     else:
-        name, subType = answer.split(":")
+        name, extra = answer.split(":")
+        subType = extra.split("<")[0]
         for item in pricing_options:
             if item["subTypeName"] == subType and item["name"] == name:
                 wrote = True
+                print("      Writing %s" % str(item))
                 writer.writerow(item)
     return wrote
 
@@ -57,7 +66,7 @@ def input_loop(writer, tp):
     print("[*] please input one card at a time, [q] to Exit:")
     count = 0
     while True:
-        card_number = input("$ ")
+        card_number = input("[%d]$ "%count)
         if verify_number(card_number):
             pricing_options = get_pricing_data(card_number, tp)
             if ask_user_and_write_to_file(writer, pricing_options):
