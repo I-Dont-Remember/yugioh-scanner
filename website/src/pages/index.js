@@ -14,7 +14,8 @@ const styles = {
 function sumTds(tds) {
     let sum = 0;
     for (let i=0;i < tds.length; i++) {
-        sum += parseFloat(tds[i].innerHTML);
+        const text = tds[i].innerHTML;
+        sum += (text === "None")? 0: parseFloat(text);
     }
     return sum;
 }
@@ -132,14 +133,14 @@ class IndexPage extends React.Component {
 
     addCard = (cardData) => {
         const cards = this.state.cards;
-        cards.push(cardData)
+        const id = Math.random()*200;
+        cards.push({id: id, types: cardData})
         this.setState({newCardNumber: "", cards: cards});
     }
 
-    removeCard = (card) => {
-        // cards are list of subTypes, so just check first
+    removeCard = (id) => {
         this.setState({
-            cards: this.state.cards.filter(c=> c[0].number !== card[0].number)
+            cards: this.state.cards.filter(c => { return c.id !== id})
         })
     }
 
@@ -157,7 +158,8 @@ class IndexPage extends React.Component {
                 autoFocus={true}
                 />
             <Deck cards={this.state.cards} removeCard={this.removeCard} updateTotals={this.updateTotals} />
-            <h3>Total</h3>
+            {/* <h3>Total</h3>
+            <button onClick={this.updateTotals}>Refresh</button>
             <table>
                 <thead>
                     <tr>
@@ -175,7 +177,7 @@ class IndexPage extends React.Component {
                         <td>{totals.high}</td>
                     </tr>
                 </tbody>
-            </table>
+            </table> */}
         </div>
     </Layout>
     )}

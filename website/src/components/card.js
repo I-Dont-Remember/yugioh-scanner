@@ -14,7 +14,7 @@ class Card extends React.Component {
     }
 
     getCurrentFromOption = (option) => {
-        const types = this.props.card;
+        const types = this.props.card.types;
         // find the correct subtype object from card
         for (let i in types) {
             if (types[i].subTypeName === option) {
@@ -29,21 +29,21 @@ class Card extends React.Component {
         const card = this.props.card;
         let current = this.getCurrentFromOption(this.state.option);
         if (!current) {
-            current = card[0];
+            current = card.types[0];
         }
         console.log("Current " + JSON.stringify(current));
         console.log(this.state.option);
         return (
         <tr>
-            <td>{card[0].cardNumber}</td>
-            <td>{card[0].name}</td>
+            <td>{card.types[0].cardNumber}</td>
+            <td>{card.types[0].name}</td>
             <td>
                 <select
                     onChange={this.selectOnChange}
                     value={this.state.option}
                 >
                     {
-                        card.map(s=> (
+                        card.types.map(s=> (
                             <option key={Math.random()} value={s.subTypeName}>{s.subTypeName}</option>
                         ))
                     }
@@ -54,7 +54,7 @@ class Card extends React.Component {
             <td className="lowPrice">{current.lowPrice || "None"}</td>
             <td className="midPrice">{current.midPrice || "None"}</td>
             <td className="highPrice">{current.highPrice || "None"}</td>
-            <td><button  onClick={()=> {this.props.remove(card)}}>X</button></td>
+            <td><button  onClick={()=> {this.props.remove(card.id)}}>X</button></td>
         </tr>
     )}
 }

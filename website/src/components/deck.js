@@ -11,10 +11,6 @@ const styles = {
 
 class Deck extends React.Component {
 
-    removeCard = (card) => {
-        this.props.removeCard(card);
-    }
-
     render() {
         const cards = this.props.cards;
         return (
@@ -33,7 +29,7 @@ class Deck extends React.Component {
             </thead>
             <tbody>
             {cards && cards.map(c => (
-                <Card key={Math.random()} card={c} remove={this.removeCard} updateTotals={this.props.updateTotals}/>
+                <Card key={c.id} card={c} remove={this.props.removeCard} updateTotals={this.props.updateTotals}/>
                 )
             )}
             </tbody>
