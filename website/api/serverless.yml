@@ -16,7 +16,6 @@ service: yugioh # NOTE: update this with your service name
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
-
 provider:
   name: aws
   runtime: python3.7
@@ -41,9 +40,6 @@ provider:
 #            - "Ref" : "ServerlessDeploymentBucket"
 #            - "/*"
 # you can define service wide environment variables here
-environment:
-   public_key: ${env:public_key}
-   private_key: ${env:private_key}
 
 # you can add packaging information here
 #package:
@@ -61,6 +57,10 @@ functions:
       - http:
           path: price
           method: get
+    environment:
+      public_key: ${file(./env.yml):public_key}
+      private_key: ${file(./env.yml):private_key}
+
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
