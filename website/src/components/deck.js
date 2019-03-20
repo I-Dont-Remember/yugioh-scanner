@@ -18,19 +18,25 @@ class Deck extends React.Component {
     render() {
         const cards = this.props.cards;
         return (
-        <table style={styles.table}>
-            <tr>
+        <table id="deck" style={styles.table}>
+            <thead>
+                <tr>
                 <th>Number</th>
                 <th>Name</th>
+                <th>SubType</th>
                 <th>marketPrice</th>
                 <th>lowPrice</th>
                 <th>midPrice</th>
                 <th>highPrice</th>
-            </tr>
+                <th></th>
+                </tr>
+            </thead>
+            <tbody>
             {cards && cards.map(c => (
-                <Card key={Math.random()} card={c} remove={this.removeCard} />
+                <Card key={Math.random()} card={c} remove={this.removeCard} updateTotals={this.props.updateTotals}/>
                 )
             )}
+            </tbody>
         </table>
     )}
 }

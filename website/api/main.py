@@ -159,10 +159,7 @@ def main(event, context):
         if not re.match(r"[a-zA-Z0-9]{1,6}-[a-zA-Z0-9]{1,6}", number):
             raise KeyError
     except KeyError:
-        return {
-            "statusCode": 400,
-            "body": "Need valid 'number' parameter"
-        }
+        return response(400, "Need valid 'number' parameter")
 
     try:
         # TODO: need to find a way to cache data for these API calls, probably Dynamo
@@ -174,10 +171,8 @@ def main(event, context):
         # search, get list of product ids
         results = client.search_by_number(number)
         if not results:
-            return {
-                "statusCode": 501,
-                "body": "Failed getting search results"
-            }
+            print("No results for %s" % number)
+            return response(204, [])
         
         names = {}
         # get details for the product ids
@@ -197,6 +192,7 @@ def main(event, context):
             p["cardNumber"] = number
             del p["directLowPrice"]
 
+        print("Found %d prices for number %s" %(len(prices, number)))
         return {
             "statusCode": 200,
             "headers": {
@@ -208,10 +204,18 @@ def main(event, context):
     except Exception as e:
         print("Failed getting API client")
         print(e)
-        return {
-            "statusCode": 500
-        }
+        return response(500, None)
 
+
+def response(status, msg):
+    return {
+        "statusCode": status,
+        "headers": {
+            "Access-Control-Allow-Origin" : "*",
+            "Access-Control-Allow-Methods" : "GET, OPTIONS",
+        },
+        "body": json.dumps(msg)
+    }
 
 if __name__ == "__main__":
     import sys
