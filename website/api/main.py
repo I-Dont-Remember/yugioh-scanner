@@ -187,19 +187,31 @@ def main(event, context):
             names[d["productId"]] = d["name"]
 
         # prices are by product id, add relevant details to the price object
+        # also grab the list of subTypes from these
+        subTypes = []
         for p in prices:
+            subTypes.append(p["subTypeName"])
             p["name"] = names[p["productId"]]
             p["cardNumber"] = number
             del p["directLowPrice"]
 
-        print("Found %d prices for number %s" %(len(prices, number)))
+        print("Found %d prices for number %s" %(len(prices), number))
+        
+        cardData = {
+            "productId": prices[0]["productId"],
+            "name": prices[0]["name"],
+            "cardNumber": number,
+            "subTypes": subTypes,
+            "prices": prices
+        }
+        print(cardData)
         return {
             "statusCode": 200,
             "headers": {
                 "Access-Control-Allow-Origin" : "*",
                 "Access-Control-Allow-Methods" : "GET, OPTIONS",
             },
-            "body": json.dumps(prices)
+            "body": json.dumps(cardData)
         }
     except Exception as e:
         print("Failed getting API client")
