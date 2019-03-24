@@ -4,6 +4,7 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 import Deck from "../components/deck"
 import { replace } from "gatsby";
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 const styles = {
     wrapper: {
@@ -53,6 +54,7 @@ function calculateTotals(cards, displayed) {
 class IndexPage extends React.Component {
     // cards is list of lists, each one has multiple subtypes: unlimited, 1st edition
     state = {
+        isLoading: false,
         cards: [],
         displayedSubTypes: {},
         totals: {
@@ -99,63 +101,65 @@ class IndexPage extends React.Component {
             
             if (number) {
                 console.log("api call");
-                const apiCall =  {
-                    "cardNumber": "RDS-EN020",
-                    "name": "Raging Flame Sprite",
-                    "prices": [
-                        {
-                            "cardNumber": "RDS-EN020",
-                            "highPrice": 1.0,
-                            "lowPrice": 0.1,
-                            "marketPrice": 0.5,
-                            "midPrice": 0.2,
-                            "name": "Raging Flame Sprite",
-                            "productId": 23416,
-                            "subTypeName": "Unlimited"
-                        },
-                        {
-                            "cardNumber": "RDS-EN020",
-                            "highPrice": 0.79,
-                            "lowPrice": 0.11,
-                            "marketPrice": 0.25,
-                            "midPrice": 0.24,
-                            "name": "Raging Flame Sprite",
-                            "productId": 23416,
-                            "subTypeName": "1st Edition"
-                        }
-                    ],
-                    "productId": 23416,
-                    "subTypes": [
-                        "Unlimited",
-                        "1st Edition"
-                    ]
-                }
+                // const apiCall =  {
+                //     "cardNumber": "RDS-EN020",
+                //     "name": "Raging Flame Sprite",
+                //     "prices": [
+                //         {
+                //             "cardNumber": "RDS-EN020",
+                //             "highPrice": 1.0,
+                //             "lowPrice": 0.1,
+                //             "marketPrice": 0.5,
+                //             "midPrice": 0.2,
+                //             "name": "Raging Flame Sprite",
+                //             "productId": 23416,
+                //             "subTypeName": "Unlimited"
+                //         },
+                //         {
+                //             "cardNumber": "RDS-EN020",
+                //             "highPrice": 0.79,
+                //             "lowPrice": 0.11,
+                //             "marketPrice": 0.25,
+                //             "midPrice": 0.24,
+                //             "name": "Raging Flame Sprite",
+                //             "productId": 23416,
+                //             "subTypeName": "1st Edition"
+                //         }
+                //     ],
+                //     "productId": 23416,
+                //     "subTypes": [
+                //         "Unlimited",
+                //         "1st Edition"
+                //     ]
+                // }
                 
-
-                this.addCard(apiCall);
-                // // fetch doesn't count 500 as an error, so check it
-                // fetch(`${url}?number=${number}`)
-                // .then(resp => {
-                //     if (!resp.ok) {
-                //         throw Error(resp.statusText);
-                //     }
-                //     console.log(resp);
-                //     return resp.json();
-                // })
-                // .then((data) => {
-                //     console.log(data);
-                //     data.forEach(elem => {
-                //         this.addCard(elem)
-                //     })
-                // })
-                // .catch((error) => {
-                //     if (error instanceof SyntaxError) {
-                //         alert("Found nothing");
-                //     } else {
-                //         console.log(error);
-                //         alert(error);
-                //     }
-                // })
+                // this.addCard(apiCall);
+                // fetch doesn't count 500 as an error, so check it
+                this.setState({isLoading: true});
+                fetch(`${url}?number=${number}`)
+                .then(resp => {
+                    if (!resp.ok) {
+                        throw Error(resp.statusText);
+                    }
+                    console.log(resp);
+                    return resp.json();
+                })
+                .then((data) => {
+                    console.log(data);
+                    this.addCard(data);
+                })
+                .catch((error) => {
+                    if (error instanceof SyntaxError) {
+                        alert("Found nothing");
+                    } else {
+                        console.log(error);
+                        alert(error);
+                    }
+                })
+                .then(()=> {
+                    console.log("finally setting loading to false")
+                    this.setState({isLoading: false})
+                })
             }
         }
     }
@@ -200,13 +204,15 @@ class IndexPage extends React.Component {
     <Layout>
     <SEO title="Home" keywords={[`yugioh`, `deck prices`, `deck`]} />
         <div style={styles.wrapper}>
-            <input
+            {this.state.isLoading? 
+                <CircularProgress />
+                : <input
                 placeholder="Add a card number.."
                 value={this.state.newCardNumber}
                 onKeyDown={this.handleNewCardDown}
                 onChange={this.handleChange}
                 autoFocus={true}
-                />
+                />}
             <Deck cards={this.state.cards} removeCard={this.removeCard} selectOnChange={this.selectOnChange} displayed={this.state.displayedSubTypes} />
             <h3>Totals</h3>
             <table>
