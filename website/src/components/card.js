@@ -1,44 +1,46 @@
 import React from "react"
 
 class Card extends React.Component {
-    state = {
-        option: ""
-    }
+    // state = {
+    //     option: ""
+    // }
 
-    selectOnChange = (event) => {
-        const option = event.target.value;
-        console.log("Change subtype: " + option);
-        this.setState({option: option});
-        // want to re-render parent when this updates
-        // TODO: make this work this.props.updateTotals();
-    }
+    // selectOnChange = (event) => {
+    //     const option = event.target.value;
+    //     console.log("Change subtype: " + option);
+    //     this.setState({option: option});
+    //     // want to re-render parent when this updates
+    //     // TODO: make this work this.props.updateTotals();
+    // }
 
-    getCurrentFromOption = (option) => {
-        const types = this.props.card.types;
-        // find the correct subtype object from card
-        for (let i in types) {
-            if (types[i].subTypeName === option) {
-                return types[i];
-            }
-        }
-        return {};
-    }
+    // getCurrentFromOption = (option) => {
+    //     const types = this.props.card.types;
+    //     // find the correct subtype object from card
+    //     for (let i in types) {
+    //         if (types[i].subTypeName === option) {
+    //             return types[i];
+    //         }
+    //     }
+    //     return {};
+    // }
 
     render() {
         // card is list of subtype objects
         const card = this.props.card;
-        let current = this.getCurrentFromOption(this.state.option);
-        if (!current) {
-            current = card.types[0];
-        }
-        console.log("Current " + JSON.stringify(current));
-        console.log(this.state.option);
+        // let current = this.getCurrentFromOption(this.state.option);
+        // if (!current) {
+        //     current = card.types[0];
+        // // }
+        // console.log("Current " + JSON.stringify(current));
+        // console.log(this.state.option);
+        const current = card.prices[0];
         return (
         <tr>
-            <td>{card.types[0].cardNumber}</td>
-            <td>{card.types[0].name}</td>
+            <td>{card.cardNumber}</td>
+            <td>{card.name}</td>
             <td>
-                <select
+                {current.subTypeName}
+                {/* <select
                     onChange={this.selectOnChange}
                     value={this.state.option}
                 >
@@ -48,7 +50,7 @@ class Card extends React.Component {
                         ))
                     }
                     <option value=""></option>
-                </select>
+                </select> */}
             </td>
             <td className="marketPrice">{current.marketPrice || "None"}</td>
             <td className="lowPrice">{current.lowPrice || "None"}</td>

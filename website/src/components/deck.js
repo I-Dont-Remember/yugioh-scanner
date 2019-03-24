@@ -29,7 +29,7 @@ class Deck extends React.Component {
             </thead>
             <tbody>
             {cards && cards.map(c => (
-                <Card key={c.id} card={c} remove={this.props.removeCard} updateTotals={this.props.updateTotals}/>
+                <Card key={c.id} card={c} remove={this.props.removeCard} />
                 )
             )}
             </tbody>

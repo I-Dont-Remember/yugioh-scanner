@@ -25,6 +25,7 @@ class IndexPage extends React.Component {
     // cards is list of lists, each one has multiple subtypes: unlimited, 1st edition
     state = {
         cards: [],
+        displayedSubTypes: {},
         totals: {
             market:0,
             low:0,
@@ -33,32 +34,32 @@ class IndexPage extends React.Component {
         }
     }
 
-    getTotals = () => {
-        let totals =  {
-            market:0,
-            low:0,
-            mid:0,
-            high:0
-        }
-        const deck = document.getElementById("deck");
-        if (deck) {
-            const markets = document.getElementById("deck").getElementsByClassName("marketPrice");
-            const lows = document.getElementById("deck").getElementsByClassName("lowPrice");
-            const mids = document.getElementById("deck").getElementsByClassName("midPrice");
-            const highs = document.getElementById("deck").getElementsByClassName("highPrice");
-            
-            totals.market = sumTds(markets);
-            totals.low = sumTds(lows);
-            totals.mid = sumTds(mids);
-            totals.high = sumTds(highs);
-        }
-        console.log(totals)
-        return totals
-    }
+    // changeSelect = (event) => {
 
-    updateTotals = () => {
-        this.setState({totals: this.getTotals()});
-    }
+    // }
+
+    // getTotals = () => {
+    //     let totals =  {
+    //         market:0,
+    //         low:0,
+    //         mid:0,
+    //         high:0
+    //     }
+    //     const deck = document.getElementById("deck");
+    //     if (deck) {
+    //         const markets = document.getElementById("deck").getElementsByClassName("marketPrice");
+    //         const lows = document.getElementById("deck").getElementsByClassName("lowPrice");
+    //         const mids = document.getElementById("deck").getElementsByClassName("midPrice");
+    //         const highs = document.getElementById("deck").getElementsByClassName("highPrice");
+            
+    //         totals.market = sumTds(markets);
+    //         totals.low = sumTds(lows);
+    //         totals.mid = sumTds(mids);
+    //         totals.high = sumTds(highs);
+    //     }
+    //     console.log(totals)
+    //     return totals
+    // }
 
     handleChange = (event) => {
         this.setState({newCardNumber: event.target.value});
@@ -80,28 +81,38 @@ class IndexPage extends React.Component {
             
             if (number) {
                 console.log("api call");
-                const apiCall =  [
-                    {
-                        "cardNumber": "RDS-EN020",
-                        "highPrice": 1.0,
-                        "lowPrice": 0.1,
-                        "marketPrice": 0.5,
-                        "midPrice": 0.2,
-                        "name": "Raging Flame Sprite",
-                        "productId": 23416,
-                        "subTypeName": "Unlimited"
-                    },
-                    {
-                        "cardNumber": "RDS-EN020",
-                        "highPrice": 0.79,
-                        "lowPrice": 0.11,
-                        "marketPrice": 0.25,
-                        "midPrice": 0.24,
-                        "name": "Raging Flame Sprite",
-                        "productId": 23416,
-                        "subTypeName": "1st Edition"
-                    }
-                ]
+                const apiCall =  {
+                    "cardNumber": "RDS-EN020",
+                    "name": "Raging Flame Sprite",
+                    "prices": [
+                        {
+                            "cardNumber": "RDS-EN020",
+                            "highPrice": 1.0,
+                            "lowPrice": 0.1,
+                            "marketPrice": 0.5,
+                            "midPrice": 0.2,
+                            "name": "Raging Flame Sprite",
+                            "productId": 23416,
+                            "subTypeName": "Unlimited"
+                        },
+                        {
+                            "cardNumber": "RDS-EN020",
+                            "highPrice": 0.79,
+                            "lowPrice": 0.11,
+                            "marketPrice": 0.25,
+                            "midPrice": 0.24,
+                            "name": "Raging Flame Sprite",
+                            "productId": 23416,
+                            "subTypeName": "1st Edition"
+                        }
+                    ],
+                    "productId": 23416,
+                    "subTypes": [
+                        "Unlimited",
+                        "1st Edition"
+                    ]
+                }
+                
 
                 this.addCard(apiCall);
                 // // fetch doesn't count 500 as an error, so check it
@@ -131,10 +142,10 @@ class IndexPage extends React.Component {
         }
     }
 
-    addCard = (cardData) => {
+    addCard = (card) => {
         const cards = this.state.cards;
-        const id = Math.random()*200;
-        cards.push({id: id, types: cardData})
+        card.id = `${Math.random()*500}-${Math.random()*500}-${Math.random()*500}`;
+        cards.push(card);
         this.setState({newCardNumber: "", cards: cards});
     }
 
@@ -157,7 +168,7 @@ class IndexPage extends React.Component {
                 onChange={this.handleChange}
                 autoFocus={true}
                 />
-            <Deck cards={this.state.cards} removeCard={this.removeCard} updateTotals={this.updateTotals} />
+            <Deck cards={this.state.cards} removeCard={this.removeCard} />
             {/* <h3>Total</h3>
             <button onClick={this.updateTotals}>Refresh</button>
             <table>
