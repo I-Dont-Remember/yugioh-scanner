@@ -25,6 +25,31 @@ const url = "https://cx05z8loqi.execute-api.us-east-1.amazonaws.com/dev/price"
 function getId() {
     return Math.floor(Math.random()*500);
 }
+
+function calculateTotals(cards, displayed) {
+    let totals =  {
+        market:0,
+        low:0,
+        mid:0,
+        high:0
+    }
+
+    for (let i in cards) {
+        const selected = displayed[cards[i].id];
+        // find the selected price in list
+        for (let j in cards[i].prices) {
+            const data = cards[i].prices[j];
+            if (data.subTypeName === selected) {
+                totals.market += data.marketPrice;
+                totals.low += data.lowPrice;
+                totals.mid += data.midPrice;
+                totals.high += data.highPrice;
+            }
+        }
+    }
+    return totals;
+}
+
 class IndexPage extends React.Component {
     // cards is list of lists, each one has multiple subtypes: unlimited, 1st edition
     state = {
@@ -38,53 +63,20 @@ class IndexPage extends React.Component {
         }
     }
 
-    updateDisplayed = (id, option) => {
-        const totals = this.getUpdatedTotals(id, option);
-        console.log(`Changing ${id} to ${option}`);
-        this.setState(prevState => ({
-            displayedSubTypes: {
+    selectOnChange = (event, id) => {
+        // safely update the displayed map
+        const option = event.target.value;
+        this.setState(prevState => {
+            const updateDisplayed = {
                 ...prevState.displayedSubTypes,
                 [id]: option
-            },
-            totals: totals
-        }));
-    }
-
-    selectOnChange = (event, id) => {
-        this.updateDisplayed(id, event.target.value);
-    }
-
-    getUpdatedTotals = (id, newOption) => {
-        // have to make sure we are calculating from the new value and not old state
-        console.log("fetching totals");
-        let totals =  {
-            market:0,
-            low:0,
-            mid:0,
-            high:0
-        }
-        const displayed = this.state.displayedSubTypes;
-        for (let i in this.state.cards) {
-            let displayedOption;
-            const current = this.state.cards[i];
-            if (current.id === id) {
-                // this is the one that will be updated during this setState operation
-                displayedOption = newOption;
-            } else {
-                displayedOption = displayed[current.id];
+            };
+    
+            return {
+            displayedSubTypes: updateDisplayed,
+            totals: calculateTotals(this.state.cards, updateDisplayed)
             }
-            console.log(`displayed => ${displayedOption}`)
-
-            // find the matching price data
-            for (let i in current.prices) {
-                const data = current.prices[i];
-                if (data.subTypeName === displayedOption) {
-                    totals.market += data.marketPrice;
-                }
-            }
-        }
-        console.log(`calculated totals ${JSON.stringify(totals)}`)
-        return totals
+        })
     }
 
     handleChange = (event) => {
@@ -169,16 +161,35 @@ class IndexPage extends React.Component {
     }
 
     addCard = (card) => {
-        const cards = this.state.cards;
+        // safely add to cards list and displayed map
+        let cards = this.state.cards.slice();
         card.id = `${getId()}-${getId()}-${getId()}`;
         cards.push(card);
-        this.updateDisplayed(card.id, card.prices[0].subTypeName);
-        this.setState({newCardNumber: "", cards: cards});
+        this.setState(prevState => {
+            const updateDisplayed = {
+                ...prevState.displayedSubTypes,
+                [card.id]: card.prices[0].subTypeName
+            };
+            return {
+                newCardNumber: "", 
+                cards: cards,
+                displayedSubTypes: updateDisplayed,
+                totals: calculateTotals(cards, updateDisplayed)
+            }
+        });
     }
 
     removeCard = (id) => {
+        // safely remove item from both cards list and displayed map
+        let cards = this.state.cards.filter((item) => {
+            return item.id !== id
+        })
+        let updateDisplayed = Object.assign({}, this.state.displayedSubTypes);
+        delete updateDisplayed[id];
         this.setState({
-            cards: this.state.cards.filter(c => { return c.id !== id})
+            cards: this.state.cards.filter(c => { return c.id !== id}),
+            displayedSubTypes: updateDisplayed,
+            totals: calculateTotals(cards, updateDisplayed)
         })
     }
 
@@ -197,22 +208,22 @@ class IndexPage extends React.Component {
                 autoFocus={true}
                 />
             <Deck cards={this.state.cards} removeCard={this.removeCard} selectOnChange={this.selectOnChange} displayed={this.state.displayedSubTypes} />
-            <h3>Total</h3>
+            <h3>Totals</h3>
             <table>
                 <thead>
                     <tr>
                         <th>Market</th>
                         <th>Low</th>
                         <th>Mid</th>
-                        <th>high</th>
+                        <th>High</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{totals.market}</td>
-                        <td>{totals.low}</td>
-                        <td>{totals.mid}</td>
-                        <td>{totals.high}</td>
+                        <td>${totals.market}</td>
+                        <td>${totals.low}</td>
+                        <td>${totals.mid}</td>
+                        <td>${totals.high}</td>
                     </tr>
                 </tbody>
             </table>
