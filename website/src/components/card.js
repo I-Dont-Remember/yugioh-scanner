@@ -1,29 +1,10 @@
 import React from "react"
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 class Card extends React.Component {
-    // state = {
-    //     option: ""
-    // }
-
-    // selectOnChange = (event) => {
-    //     const option = event.target.value;
-    //     console.log("Change subtype: " + option);
-    //     this.setState({option: option});
-    //     // want to re-render parent when this updates
-    //     // TODO: make this work this.props.updateTotals();
-    // }
-
-    // getCurrentFromOption = (option) => {
-    //     const types = this.props.card.types;
-    //     // find the correct subtype object from card
-    //     for (let i in types) {
-    //         if (types[i].subTypeName === option) {
-    //             return types[i];
-    //         }
-    //     }
-    //     return {};
-    // }
-
     getPricesObject = (option) => {
         const prices = this.props.card.prices;
         if (!option) {
@@ -45,10 +26,10 @@ class Card extends React.Component {
         const card = this.props.card;
         const selected = this.getPricesObject(this.props.selected);
         return (
-        <tr>
-            <td>{card.cardNumber}</td>
-            <td>{card.name}</td>
-            <td>
+        <TableRow>
+            <TableCell>{card.cardNumber}</TableCell>
+            <TableCell>{card.name}</TableCell>
+            <TableCell>
                 <select
                     onChange={(event) => {this.props.onChange(event, card.id)}}
                     value={selected.subTypeName}
@@ -59,13 +40,13 @@ class Card extends React.Component {
                         ))
                     }
                 </select>
-            </td>
-            <td className="marketPrice">{selected.marketPrice || "None"}</td>
-            <td className="lowPrice">{selected.lowPrice || "None"}</td>
-            <td className="midPrice">{selected.midPrice || "None"}</td>
-            <td className="highPrice">{selected.highPrice || "None"}</td>
-            <td><button  onClick={()=> {this.props.remove(card.id)}}>X</button></td>
-        </tr>
+            </TableCell>
+            <TableCell className="marketPrice">$ {selected.marketPrice || "None"}</TableCell>
+            <TableCell className="lowPrice">$ {selected.lowPrice || "None"}</TableCell>
+            <TableCell className="midPrice">$ {selected.midPrice || "None"}</TableCell>
+            <TableCell className="highPrice">$ {selected.highPrice || "None"}</TableCell>
+            <TableCell><IconButton  onClick={()=> {this.props.remove(card.id)}}><DeleteIcon /></IconButton></TableCell>
+        </TableRow>
     )}
 }
 

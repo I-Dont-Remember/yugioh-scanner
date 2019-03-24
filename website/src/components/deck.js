@@ -1,5 +1,10 @@
 import React from 'react'
 import Card from "../components/card"
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 const styles = {
     table: {
@@ -19,26 +24,26 @@ class Deck extends React.Component {
     render() {
         const cards = this.props.cards;
         return (
-        <table id="deck" style={styles.table}>
-            <thead>
-                <tr>
-                <th>Number</th>
-                <th>Name</th>
-                <th>SubType</th>
-                <th>marketPrice</th>
-                <th>lowPrice</th>
-                <th>midPrice</th>
-                <th>highPrice</th>
-                <th></th>
-                </tr>
-            </thead>
-            <tbody>
+        <Table style={styles.table}>
+            <TableHead>
+                <TableRow>
+                <TableCell>Number</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>SubType</TableCell>
+                <TableCell>marketPrice</TableCell>
+                <TableCell>lowPrice</TableCell>
+                <TableCell>midPrice</TableCell>
+                <TableCell>highPrice</TableCell>
+                <TableCell></TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
             {cards && cards.map(c => (
                 <Card key={c.id} card={c} remove={this.props.removeCard} onChange={this.props.selectOnChange} selected={this.getSelected(c.id)} />
                 )
             )}
-            </tbody>
-        </table>
+            </TableBody>
+        </Table>
     )}
 }
 

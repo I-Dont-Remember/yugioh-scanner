@@ -5,6 +5,11 @@ import SEO from "../components/seo"
 import Deck from "../components/deck"
 import { replace } from "gatsby";
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 const styles = {
     wrapper: {
@@ -213,10 +218,30 @@ class IndexPage extends React.Component {
                 onChange={this.handleChange}
                 autoFocus={true}
                 />}
+            <br />
+            <br />
             <Deck cards={this.state.cards} removeCard={this.removeCard} selectOnChange={this.selectOnChange} displayed={this.state.displayedSubTypes} />
+            <br />
             <h3>Totals</h3>
-            <table>
-                <thead>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Market</TableCell>
+                        <TableCell>Low</TableCell>
+                        <TableCell>Mid</TableCell>
+                        <TableCell>High</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>$ {totals.market}</TableCell>
+                        <TableCell>$ {totals.low}</TableCell>
+                        <TableCell>$ {totals.mid}</TableCell>
+                        <TableCell>$ {totals.high}</TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+                {/* <thead>
                     <tr>
                         <th>Market</th>
                         <th>Low</th>
@@ -232,7 +257,7 @@ class IndexPage extends React.Component {
                         <td>${totals.high}</td>
                     </tr>
                 </tbody>
-            </table>
+                </table> */}
         </div>
     </Layout>
     )}
