@@ -24,38 +24,46 @@ class Card extends React.Component {
     //     return {};
     // }
 
+    getPricesObject = (option) => {
+        const prices = this.props.card.prices;
+        if (!option) {
+            return prices[0];
+        }
+
+        for (let i in prices) {
+            if (prices[i].subTypeName === option) {
+                return prices[i];
+            }
+        }
+
+        console.log("failed to find matching subtype for " + JSON.stringify(option));
+        return prices[0];
+    }
+
     render() {
         // card is list of subtype objects
         const card = this.props.card;
-        // let current = this.getCurrentFromOption(this.state.option);
-        // if (!current) {
-        //     current = card.types[0];
-        // // }
-        // console.log("Current " + JSON.stringify(current));
-        // console.log(this.state.option);
-        const current = card.prices[0];
+        const selected = this.getPricesObject(this.props.selected);
         return (
         <tr>
             <td>{card.cardNumber}</td>
             <td>{card.name}</td>
             <td>
-                {current.subTypeName}
-                {/* <select
-                    onChange={this.selectOnChange}
-                    value={this.state.option}
+                <select
+                    onChange={(event) => {this.props.onChange(event, card.id)}}
+                    value={selected.subTypeName}
                 >
                     {
-                        card.types.map(s=> (
-                            <option key={Math.random()} value={s.subTypeName}>{s.subTypeName}</option>
+                        card.subTypes.map(s=> (
+                            <option key={Math.random()} value={s}>{s}</option>
                         ))
                     }
-                    <option value=""></option>
-                </select> */}
+                </select>
             </td>
-            <td className="marketPrice">{current.marketPrice || "None"}</td>
-            <td className="lowPrice">{current.lowPrice || "None"}</td>
-            <td className="midPrice">{current.midPrice || "None"}</td>
-            <td className="highPrice">{current.highPrice || "None"}</td>
+            <td className="marketPrice">{selected.marketPrice || "None"}</td>
+            <td className="lowPrice">{selected.lowPrice || "None"}</td>
+            <td className="midPrice">{selected.midPrice || "None"}</td>
+            <td className="highPrice">{selected.highPrice || "None"}</td>
             <td><button  onClick={()=> {this.props.remove(card.id)}}>X</button></td>
         </tr>
     )}

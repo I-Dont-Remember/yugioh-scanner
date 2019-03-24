@@ -21,6 +21,10 @@ function sumTds(tds) {
 }
 
 const url = "https://cx05z8loqi.execute-api.us-east-1.amazonaws.com/dev/price"
+
+function getId() {
+    return Math.floor(Math.random()*500);
+}
 class IndexPage extends React.Component {
     // cards is list of lists, each one has multiple subtypes: unlimited, 1st edition
     state = {
@@ -34,32 +38,54 @@ class IndexPage extends React.Component {
         }
     }
 
-    // changeSelect = (event) => {
+    updateDisplayed = (id, option) => {
+        const totals = this.getUpdatedTotals(id, option);
+        console.log(`Changing ${id} to ${option}`);
+        this.setState(prevState => ({
+            displayedSubTypes: {
+                ...prevState.displayedSubTypes,
+                [id]: option
+            },
+            totals: totals
+        }));
+    }
 
-    // }
+    selectOnChange = (event, id) => {
+        this.updateDisplayed(id, event.target.value);
+    }
 
-    // getTotals = () => {
-    //     let totals =  {
-    //         market:0,
-    //         low:0,
-    //         mid:0,
-    //         high:0
-    //     }
-    //     const deck = document.getElementById("deck");
-    //     if (deck) {
-    //         const markets = document.getElementById("deck").getElementsByClassName("marketPrice");
-    //         const lows = document.getElementById("deck").getElementsByClassName("lowPrice");
-    //         const mids = document.getElementById("deck").getElementsByClassName("midPrice");
-    //         const highs = document.getElementById("deck").getElementsByClassName("highPrice");
-            
-    //         totals.market = sumTds(markets);
-    //         totals.low = sumTds(lows);
-    //         totals.mid = sumTds(mids);
-    //         totals.high = sumTds(highs);
-    //     }
-    //     console.log(totals)
-    //     return totals
-    // }
+    getUpdatedTotals = (id, newOption) => {
+        // have to make sure we are calculating from the new value and not old state
+        console.log("fetching totals");
+        let totals =  {
+            market:0,
+            low:0,
+            mid:0,
+            high:0
+        }
+        const displayed = this.state.displayedSubTypes;
+        for (let i in this.state.cards) {
+            let displayedOption;
+            const current = this.state.cards[i];
+            if (current.id === id) {
+                // this is the one that will be updated during this setState operation
+                displayedOption = newOption;
+            } else {
+                displayedOption = displayed[current.id];
+            }
+            console.log(`displayed => ${displayedOption}`)
+
+            // find the matching price data
+            for (let i in current.prices) {
+                const data = current.prices[i];
+                if (data.subTypeName === displayedOption) {
+                    totals.market += data.marketPrice;
+                }
+            }
+        }
+        console.log(`calculated totals ${JSON.stringify(totals)}`)
+        return totals
+    }
 
     handleChange = (event) => {
         this.setState({newCardNumber: event.target.value});
@@ -144,8 +170,9 @@ class IndexPage extends React.Component {
 
     addCard = (card) => {
         const cards = this.state.cards;
-        card.id = `${Math.random()*500}-${Math.random()*500}-${Math.random()*500}`;
+        card.id = `${getId()}-${getId()}-${getId()}`;
         cards.push(card);
+        this.updateDisplayed(card.id, card.prices[0].subTypeName);
         this.setState({newCardNumber: "", cards: cards});
     }
 
@@ -156,6 +183,7 @@ class IndexPage extends React.Component {
     }
 
     render() {
+        console.log(this.state);
         const totals = this.state.totals;
         return (
     <Layout>
@@ -168,9 +196,8 @@ class IndexPage extends React.Component {
                 onChange={this.handleChange}
                 autoFocus={true}
                 />
-            <Deck cards={this.state.cards} removeCard={this.removeCard} />
-            {/* <h3>Total</h3>
-            <button onClick={this.updateTotals}>Refresh</button>
+            <Deck cards={this.state.cards} removeCard={this.removeCard} selectOnChange={this.selectOnChange} displayed={this.state.displayedSubTypes} />
+            <h3>Total</h3>
             <table>
                 <thead>
                     <tr>
@@ -188,7 +215,7 @@ class IndexPage extends React.Component {
                         <td>{totals.high}</td>
                     </tr>
                 </tbody>
-            </table> */}
+            </table>
         </div>
     </Layout>
     )}

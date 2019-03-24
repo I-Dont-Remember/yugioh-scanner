@@ -11,6 +11,11 @@ const styles = {
 
 class Deck extends React.Component {
 
+    getSelected = (id) => {
+        const displayed = this.props.displayed;
+        return displayed[id] || undefined;
+    }
+
     render() {
         const cards = this.props.cards;
         return (
@@ -29,7 +34,7 @@ class Deck extends React.Component {
             </thead>
             <tbody>
             {cards && cards.map(c => (
-                <Card key={c.id} card={c} remove={this.props.removeCard} />
+                <Card key={c.id} card={c} remove={this.props.removeCard} onChange={this.props.selectOnChange} selected={this.getSelected(c.id)} />
                 )
             )}
             </tbody>
