@@ -91,13 +91,14 @@ class TCGplayerClient(object):
         }
 
 
-    def _get(self, path, data=None):
-        r = requests.get(url+version_path+path, data=data, headers=self.headers)
+    def _get(self, path, params=None):
+        r = requests.get(url+version_path+path, params=params, headers=self.headers)
         if r.status_code != requests.codes.ok or not r.json()["success"]:
             raise TCGplayerException(r.json())
         else:
+            print("------")
+            print(r.url)
             return r.json()["results"]
-
 
     def _post(self, path, body=None):
         r = requests.post(url+version_path+path, json=body, headers=self.headers)
@@ -118,10 +119,16 @@ class TCGplayerClient(object):
     def get_yugioh_category_details(self):
         # doesn't need to be a list for 1 item
         return self._get("/catalog/categories/2")[0]
+
+    def get_pokemon_category_details(self):
+            return self._get("/catalog/categories/3")[0]
     
     def get_yugioh_search_manifest(self):
         # doesn't need to be a list for 1 item
         return self._get("/catalog/categories/2/search/manifest")[0]
+
+    def get_pokemon_search_manifest(self):
+        return self._get("/catalog/categories/3/search/manifest")[0]
 
     def search(self, query):
         # returns a list of product ids that matched
@@ -132,12 +139,25 @@ class TCGplayerClient(object):
         }
         return self._post("/catalog/categories/2/search", body=body)
     
+    def search_pokemon(self, number, setName):
+        body = {
+            "filters": [
+                {
+                    "name": "SetName", "values": [setName]
+                }
+            ]
+        }
+        return self._post("/catalog/categories/3/search", body=body)
+
     def get_category_groups(self):
         return self._get("/catalog/categories/2/groups")
 
     def get_product_details(self, product_ids):
         comma_list = ",".join(map(str, product_ids))
-        return self._get("/catalog/products/%s"%comma_list)
+        params = {
+            "getExtendedFields": "true"
+        }
+        return self._get("/catalog/products/%s"%comma_list)#, params=params)
 
     def get_product_pricing(self, product_ids):
         if not product_ids:
@@ -149,3 +169,4 @@ class TCGplayerClient(object):
         # returns a results list, but only ever returns one item
         data = self._get("/pricing/marketprices/%s"%sku)[0]
         return data["price"], data["lowestRange"], data["highestRange"]
+
